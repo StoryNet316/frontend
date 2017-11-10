@@ -2,21 +2,28 @@ import React, { Component } from 'react';
 import './App.css';
 import {
   BrowserRouter as Router,
-  Route,
-  Link
+  Route
 } from 'react-router-dom'
 
 import ButtonAppBar from './ButtonAppBar'
+import Home from './Home'
 import History from './History'
 
 class App extends Component {
+
+
   render() {
     return (
       <div className="App">
-        <ButtonAppBar/>
         <Router>
-          <Route exact path="/history" component={History}/>
+          <div>
+            <ButtonAppBar/>
+            <Route exact path="/" component={Home}/>
+            <Route exact path="/history" component={History}/>
+            
+          </div>
         </Router>
+
       </div>
     );
   }
