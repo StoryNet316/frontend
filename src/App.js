@@ -8,9 +8,9 @@ import {
 import ButtonAppBar from './ButtonAppBar'
 import Home from './Home'
 import History from './History'
+import { getStories } from './database/queries'
 
 class App extends Component {
-
 
   render() {
     return (
