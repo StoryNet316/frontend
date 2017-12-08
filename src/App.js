@@ -20,7 +20,7 @@ class App extends Component {
             <ButtonAppBar/>
             <Route exact path="/" component={Home}/>
             <Route exact path="/history" component={History}/>
-            
+
           </div>
         </Router>
 
