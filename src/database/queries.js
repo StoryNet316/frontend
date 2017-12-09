@@ -1,10 +1,38 @@
 import database from './config';
-
-
 console.log(database)
-console.log("hello, world!")
 
-//===================Firestore===============================================
+
+//==========================Query===============================================
+export function getStoryNumber(uid){
+  var ref = database.collection("users");
+  var query = ref.where("uid", "==", uid);
+    query.get()
+    .then(function(querySnapshot) {
+        querySnapshot.forEach(function(doc) {
+            console.log(doc.data().numStories);
+        });
+    })
+    .catch(function(error) {
+        console.log("Error getting documents: ", error);
+    });
+}
+
+export function topUsers(x){
+  var ref = database.collection("users");
+  var query = ref.orderBy("numStories").limit(x);
+  query.get()
+  .then(function(querySnapshot) {
+      querySnapshot.forEach(function(doc) {
+          console.log(doc.data().username);
+      });
+  })
+  .catch(function(error) {
+      console.log("Error getting documents: ", error);
+  });
+
+  }
+
+//===================Firestore==================================================
 export function writeUserData(uid, username, numStories){
 database.collection("users").doc(uid.toString()).set({
     uid:uid,
