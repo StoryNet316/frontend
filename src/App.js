@@ -8,11 +8,22 @@ import {
 import ButtonAppBar from './ButtonAppBar'
 import Home from './Home'
 import History from './History'
-import { getStories } from './database/queries'
+import * as Query from './database/queries'
+
 
 class App extends Component {
 
   render() {
+    //Query.initApp();
+
+    console.log(Query.getStories(1));
+    console.log(Query.getStoryEntities("s1"));
+    console.log(Query.getStoryNumber(1));
+    console.log(Query.topUsers(3));
+
+
+
+
     return (
       <div className="App">
         <Router>
@@ -20,7 +31,7 @@ class App extends Component {
             <ButtonAppBar/>
             <Route exact path="/" component={Home}/>
             <Route exact path="/history" component={History}/>
-            
+
           </div>
         </Router>
 
