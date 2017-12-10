@@ -13,7 +13,7 @@ import History from './History'
 import Search from './Search';
 import Login from './Login';
 import Account from './Account';
-
+import * as Query from './database/queries.js'
 
 class App extends Component {
 
@@ -81,6 +81,9 @@ class App extends Component {
 
 
   render() {
+      Query.getLatestSid().then(function(res){
+          console.log(res)
+      })
 
     return (
       <div className="App">

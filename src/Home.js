@@ -51,7 +51,7 @@ class Home extends Component {
       else {
         const d = new Date();
 
-        Queries.writeUserData(user.uid,user.displayName, Queries.getNumStories(user.uid) + 1);
+        Queries.writeUserData(user.uid,user.displayName, Queries.getStoryNumber(user.uid) + 1);
         Queries.writeStoryData(user.uid, "s_test", new Date(), this.state.story, 0, false);
         console.log("Done writing story!")
 
