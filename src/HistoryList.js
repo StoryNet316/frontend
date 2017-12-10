@@ -1,114 +1,77 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { withStyles } from 'material-ui/styles';
 import List, { ListItem, ListItemText } from 'material-ui/List';
 import Divider from 'material-ui/Divider';
 
+import GridList from './GridList';
 
-const styles = theme => ({
-  root: {
-    marginLeft: '10%',
-    marginRight: '10%',
-    background: theme.palette.background.contentFrame,
-    padding: '5px',
-  },
-});
 
-function HistoryList(props) {
-  const { classes } = props;
-  return (
-    <div className={classes.root}>
+class HistoryList extends Component{
 
-      <List>
-        <ListItem button>
-          <ListItemText primary="Story 1" />
-        </ListItem>
-        <Divider />
-        <ListItem button>
-          <ListItemText primary="Story 2" />
-        </ListItem>
-        <Divider />
-        <ListItem button>
-          <ListItemText primary="Story 3" />
-        </ListItem>
-        <Divider />
-        <ListItem button>
-          <ListItemText primary="Story 4" />
-        </ListItem>
-        <Divider />
-        <ListItem button>
-          <ListItemText primary="Story 5" />
-        </ListItem>
-        <Divider />
-        <ListItem button>
-          <ListItemText primary="Story 6" />
-        </ListItem>
-        <Divider />
-        <ListItem button>
-          <ListItemText primary="Story 7" />
-        </ListItem>
-        <Divider />
-        <ListItem button>
-          <ListItemText primary="Story 8" />
-        </ListItem>
-        <Divider />
-        <ListItem button>
-          <ListItemText primary="Story 9" />
-        </ListItem>
-        <Divider />
-        <ListItem button>
-          <ListItemText primary="Story 10" />
-        </ListItem>
+  constructor(props) {
+    super(props);
 
-        <Divider/>
+    this.state = {
+      // Denotes the list item that is currently open
+      openedItem: -1,
+    }
+  }
 
-        <ListItem button>
-          <ListItemText primary="Story 1" />
-        </ListItem>
-        <Divider />
-        <ListItem button>
-          <ListItemText primary="Story 2" />
-        </ListItem>
-        <Divider />
-        <ListItem button>
-          <ListItemText primary="Story 3" />
-        </ListItem>
-        <Divider />
-        <ListItem button>
-          <ListItemText primary="Story 4" />
-        </ListItem>
-        <Divider />
-        <ListItem button>
-          <ListItemText primary="Story 5" />
-        </ListItem>
-        <Divider />
-        <ListItem button>
-          <ListItemText primary="Story 6" />
-        </ListItem>
-        <Divider />
-        <ListItem button>
-          <ListItemText primary="Story 7" />
-        </ListItem>
-        <Divider />
-        <ListItem button>
-          <ListItemText primary="Story 8" />
-        </ListItem>
-        <Divider />
-        <ListItem button>
-          <ListItemText primary="Story 9" />
-        </ListItem>
-        <Divider />
-        <ListItem button>
-          <ListItemText primary="Story 10" />
-        </ListItem>
-      </List>
 
-    </div>
-  );
+  render() {
+    return (
+      <div>
+
+        <List>
+          <ListItem button>
+            <ListItemText primary="Story 1" />
+            <GridList/>
+          </ListItem>
+          <Divider />
+          <ListItem button>
+            <ListItemText primary="Story 2" />
+          </ListItem>
+          <Divider />
+          <ListItem button>
+            <ListItemText primary="Story 3" />
+          </ListItem>
+          <Divider />
+          <ListItem button>
+            <ListItemText primary="Story 4" />
+          </ListItem>
+          <Divider />
+          <ListItem button>
+            <ListItemText primary="Story 5" />
+          </ListItem>
+          <Divider />
+          <ListItem button>
+            <ListItemText primary="Story 6" />
+          </ListItem>
+          <Divider />
+          <ListItem button>
+            <ListItemText primary="Story 7" />
+          </ListItem>
+          <Divider />
+          <ListItem button>
+            <ListItemText primary="Story 8" />
+          </ListItem>
+          <Divider />
+          <ListItem button>
+            <ListItemText primary="Story 9" />
+          </ListItem>
+          <Divider />
+          <ListItem button>
+            <ListItemText primary="Story 10" />
+          </ListItem>
+
+        </List>
+
+
+      </div>
+    )
+  }
+
 }
 
-HistoryList.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
 
-export default withStyles(styles)(HistoryList);
+export default HistoryList;

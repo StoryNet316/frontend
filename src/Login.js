@@ -116,7 +116,6 @@ class Login extends Component {
                     </IconButton>
                   </InputAdornment>
                 }
-                on
               />
               { this.state.errorMessage !== "" && this.state.errorCode.includes("password") ?
                                                       <FormHelperText error>{this.state.errorMessage}</FormHelperText> : null }
