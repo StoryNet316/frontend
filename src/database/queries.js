@@ -1,16 +1,37 @@
 import database from './config';
 console.log(database)
 const userRef = database.collection("users")
-export function test(){
-     database.collection("stories").orderBy("popularity").limit(3)
-     .onSnapshot(dataSnapshot => {
-            console.log(dataSnapshot.docs);
-     });
+//export function test(){
+//     database.collection("stories").orderBy("popularity").limit(3)
+//     .onSnapshot(dataSnapshot => {
+//            console.log(dataSnapshot.docs);
+//     });
+//}
+//==========================JSON-related Query===============================================
+export function processJSON(data, uid, string){
+    getLatestSid().then(function(sidres){
+        var sid = sidres[0];
+        var json = JSON.parse(data);
+        var time = new Date();
+
+        writeStoryData(uid, sid, time, string, false);
+
+        for(var i = 0; i < json.head.length; i++){
+            var headRef = json.head
+            writeEntityInStoryData(uid, sid, headRef[i].name, headRef[i].order, headRef[i].sentiment);
+
+            for(var j = 0; j < json.head[i].image.length; i++){
+                var imageRef = headRef[i].image
+                writeImageData(uid, sid, imageRef[j].iid, headRef[i].name, headRef[i].sentiment, imageRef[j].url, headRef[i].order);
+            }
+        }
+
+    })
 }
 
 //==========================User-Related Query===============================================
 export function getUserStories(uid){
-    var ref = userRef.doc(uid.toString()).collection("stories")
+    var ref = userRef.doc(uid.toString()).collection("myStories")
 
     return ref.get().then(function(refSnapshot){
         let res = []
@@ -73,6 +94,19 @@ export function numStoriesIncrement(uid){
               console.error("Error updating document: ", error);
           });
       })
+  }
+
+export function getLatestSid(){
+    var ref = database.collection("stories");
+    var query = ref.orderBy("sid", "desc").limit(1);
+
+    return query.get().then(function(querySnapshot){
+        let res = []
+        querySnapshot.forEach(function(doc){
+            doc && doc.exists ? res.push(doc.data().sid) : null
+        })
+        return Promise.resolve(res)
+    })
   }
 
 
@@ -186,12 +220,12 @@ export function writeUserData(uid, username, numStories){
     });
 }
 
-export function writeStoryData(uid, sid, timestamp, string, pop, privacy) {
+export function writeStoryData(uid, sid, timestamp, string, privacy) {
     database.collection("users").doc(uid.toString()).collection("myStories").doc(sid.toString()).set({
         sid: sid,
         timestamp: timestamp,
         string: string,
-        popularity: pop,
+        popularity: 0,
         privacy: privacy
     });
 
@@ -200,7 +234,7 @@ export function writeStoryData(uid, sid, timestamp, string, pop, privacy) {
         uid: uid,
         timestamp: timestamp,
         string: string,
-        popularity: pop,
+        popularity: 0,
         privacy: privacy
     });
 
@@ -226,13 +260,38 @@ export function writeEntityData(name) {
   });
 }
 
-export function writeImageData(iid, name, sentiment, url, numVotes) {
+export function writeImageData(uid, sid, iid, name, sentiment, url, order) {
         database.collection("image").doc(iid.toString()).set({
+            uid: uid,
+            sid: sid,
             iid: iid,
             name: name,
             sentiment: sentiment,
             url: url,
-            numVotes: numVotes
+            numVotes: 0,
+            order: order,
+        })
+
+        database.collection("users").doc(uid.toString()).collection("myStories").doc(sid.toString()).collection("myImages").doc(iid.toString()).set({
+            uid: uid,
+            sid: sid,
+            iid: iid,
+            name: name,
+            sentiment: sentiment,
+            url: url,
+            numVotes: 0,
+            order: order,
+        });
+
+        database.collection("stories").doc(sid.toString()).collection("myImages").doc(iid.toString()).set({
+            uid: uid,
+            sid: sid,
+            iid: iid,
+            name: name,
+            sentiment: sentiment,
+            url: url,
+            numVotes: 0,
+            order: order,
         });
 }
 
@@ -242,16 +301,16 @@ export function initApp() {
     for(i = 1; i <= 20; i++){
         writeUserData(i,'test'+i+'@test.com', 1);
         if(i <= 10){
-            writeStoryData(i, 1000+i, d, 'I ate McDonald\'s this morning!', 0, false);
+            writeStoryData(i, 1000+i, d, 'I ate McDonald\'s this morning!', false);
             writeEntityInStoryData(i, 1000+i, 'McDonald\'s', 1, 0);
             writeEntityData('McDonald\'s');
-            writeImageData(1000000+i, 'McDonald\'s', 1, ['https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/McDonald%27s_Golden_Arches.svg/1200px-McDonald%27s_Golden_Arches.svg.png'], 0);
+            writeImageData(i, 1000+i, 1000000+i, 'McDonald\'s', 1, ['https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/McDonald%27s_Golden_Arches.svg/1200px-McDonald%27s_Golden_Arches.svg.png'], 1);
         }
         else{
-            writeStoryData(i, 1000+i, d, 'I drank Coca Cola this evening!', 0, false);
+            writeStoryData(i, 1000+i, d, 'I drank Coca Cola this evening!', false);
             writeEntityInStoryData(i, 1000+i, 'Coca Cola', 1, 0);
             writeEntityData('Coca Cola');
-            writeImageData(1000000+i, 'Coca Cola', 1, ['https://tse2.mm.bing.net/th?id=OIP.0_ezIcFekTq93JbSIhNVNQErDQ&pid=15.1'], 0);
+            writeImageData(i, 1000+i, 1000000+i, 'Coca Cola', 1, ['https://tse2.mm.bing.net/th?id=OIP.0_ezIcFekTq93JbSIhNVNQErDQ&pid=15.1'], 1);
         }
     }
 }
