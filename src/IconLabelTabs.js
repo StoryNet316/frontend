@@ -8,16 +8,20 @@ import AccountIcon from 'material-ui-icons/AccountCircle';
 import SearchIcon from 'material-ui-icons/Search';
 
 class IconLabelTabs extends React.Component {
-  // state = {
-  //   tabNumber: 0,
-  // };
+
+  constructor(props) {
+      super(props);
+
+      this.handleChange = this.handleChange.bind(this);
+  }
+
 
   handleChange = (event, value) => {
-
-    this.props.history.push(value)
+    this.props.history.push(value);
   };
 
   render() {
+
     return (
       <div>
         <Tabs
@@ -27,15 +31,18 @@ class IconLabelTabs extends React.Component {
           indicatorColor="white"
           textColor="contrast"
         >
-          <Tab icon={<HomeIcon />} value="/" label="Home" />
-          <Tab icon={<HistoryIcon />} value="/history" label="History" />
+          <Tab icon={<HomeIcon />} value="/home" label="Home" />
           <Tab icon={<SearchIcon />} value="/search" label="Search" />
-          <Tab icon={<AccountIcon />} value="/login" label="Login" />
+          { this.props.isLoggedIn ? <Tab icon={<HistoryIcon />} value="/history" label="History" /> :
+                                    null }
+          { this.props.isLoggedIn ? <Tab icon={<AccountIcon />} value="/account" label="Account" /> :
+                                    <Tab icon={<AccountIcon />} value="/login" label="Login" /> }
 
         </Tabs>
       </div>
     );
   }
 }
+
 
 export default withRouter(IconLabelTabs);

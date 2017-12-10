@@ -14,3 +14,6 @@ firebase.initializeApp(config)
 const database = firebase.firestore();
 
 export default database;
+
+
+export const bingKey = "bf70995a569a41f48f79b76df08690e4";
