@@ -10,6 +10,8 @@ import Home from './Home'
 import History from './History'
 import { getStories } from './database/queries'
 
+import LoginPage from './Login';
+
 class App extends Component {
 
   render() {
@@ -20,6 +22,7 @@ class App extends Component {
             <ButtonAppBar/>
             <Route exact path="/" component={Home}/>
             <Route exact path="/history" component={History}/>
+            <Route path="/login" component={LoginPage}/>
 
           </div>
         </Router>

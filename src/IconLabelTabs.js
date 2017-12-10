@@ -4,12 +4,12 @@ import {withRouter} from "react-router-dom";
 import Tabs, { Tab } from 'material-ui/Tabs';
 import HomeIcon from 'material-ui-icons/Home';
 import HistoryIcon from 'material-ui-icons/History';
-// import SettingsIcon from 'material-ui-icons/Settings';
+import AccountIcon from 'material-ui-icons/AccountCircle';
 
 class IconLabelTabs extends React.Component {
-  state = {
-    tabNumber: 0,
-  };
+  // state = {
+  //   tabNumber: 0,
+  // };
 
   handleChange = (event, value) => {
 
@@ -17,8 +17,6 @@ class IconLabelTabs extends React.Component {
   };
 
   render() {
-    console.log("debug")
-    console.log(this.props)
     return (
       <div>
         <Tabs
@@ -30,6 +28,7 @@ class IconLabelTabs extends React.Component {
         >
           <Tab icon={<HomeIcon />} value="/" label="Home" />
           <Tab icon={<HistoryIcon />} value="/history" label="History" />
+          <Tab icon={<AccountIcon />} value="/login" label="Login" />
         </Tabs>
       </div>
     );
