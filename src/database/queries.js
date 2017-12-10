@@ -3,7 +3,7 @@ console.log(database)
 const userRef = database.collection("users")
 
 //==========================User-Related Query===============================================
-export function getUserStory(uid){
+export function getUserStories(uid){
     var ref = userRef.doc(uid.toString()).collection("stories")
 
     return ref.get().then(function(refSnapshot){
@@ -15,7 +15,7 @@ export function getUserStory(uid){
     })
 }
 
-export function getStoryNumber(uid){
+export function getNumStories(uid){
   var ref = userRef.doc(uid.toString())
 
   return ref.get().then(function(doc) {
@@ -28,14 +28,26 @@ export function getStoryNumber(uid){
   })
 }
 
+export function getUsername(uid){
+  var ref = userRef.doc(uid.toString())
+
+  return ref.get().then(function(doc) {
+      if (doc && doc.exists) {
+          return Promise.resolve(doc.data().username)
+      }
+      else {
+          return Promise.resolve("User not found")
+      }
+  })
+}
+
 export function topUsers(x){
   var ref = database.collection("users");
-  var query = ref.orderBy("numStories").limit(x);
 
   return ref.get().then(function(refSnapshot){
       let res = []
       refSnapshot.forEach(function(doc){
-          doc && doc.exists ? res.push(doc.data().username) : null
+          (doc && doc.exists) ? res.push(doc.data().username) : null;
       })
       return Promise.resolve(res)
   })
@@ -46,12 +58,11 @@ export function topUsers(x){
 
 export function getEntitiesInStory(uid, sid){
     var ref = userRef.doc(uid.toString()).collection("stories").doc(sid).collection("entities");
-    var query = ref.orderBy("order");
 
     return ref.get().then(function(refSnapshot){
         let res = []
         refSnapshot.forEach(function(doc){
-            doc && doc.exists ? res.push(doc.data().estring) : null
+            (doc && doc.exists) ? res.push(doc.data().estring) : null;
         })
         return Promise.resolve(res)
     })

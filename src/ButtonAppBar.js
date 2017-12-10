@@ -1,41 +1,51 @@
-import React from 'react';
-import AppBar from 'material-ui/AppBar';
-import Toolbar from 'material-ui/Toolbar';
-import Typography from 'material-ui/Typography';
+import React, { Component } from 'react';
+import { AppBar,Toolbar, Grid } from 'material-ui';
 
 import IconLabelTabs from './IconLabelTabs';
 
-import {withRouter} from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { withStyles } from 'material-ui/styles';
 
 
-function ButtonAppBar(props) {
+class ButtonAppBar extends Component {
 
 
-  return (
-    <div>
-      <AppBar position="static" classes={{
-        root: props.classes.root
-        }}>
-        <Toolbar>
-          <Typography type="title" color="inherit">
-            STOR.IO
-          </Typography>
+  render() {
 
-          <IconLabelTabs/>
+    return (
+      <div>
+        <AppBar position="static" classes={{
+          root: this.props.classes.root
+          }}
+          >
+          <Toolbar>
+            <img src={require("./resources/StorioLogo.png")} alt="STOR.IO" height="50" width="125"/>
 
-        </Toolbar>
-      </AppBar>
-    </div>
-  );
+            <IconLabelTabs isLoggedIn={this.props.isLoggedIn}/>
+          </Toolbar>
+        </AppBar>
+      </div>
+    );
+  }
+
 }
+
+var r = Math.floor(Math.random() * 20);
+/* Color codes taken from https://www.materialui.co/flatuicolors */
+const bgColors = ['#1abc9c', '#2ecc71', '#3498db', '#9b59b6', '#34495e',
+                  '#16a085', '#27ae60', '#2980b9', '#8e44ad', '#2c3e50',
+                  '#f1c40f', '#e67e22', '#e74c3c', '#ecf0f1', '#95a5a6',
+                  '#f39c12', '#d35400', '#c0392b', '#bdc3c7', '#7f8c8d'];
+const fontColors = ['#f39c12', '#d35400', '#c0392b', '#bdc3c7', '#7f8c8d',
+                    '#f1c40f', '#e67e22', '#e74c3c', '#ecf0f1', '#95a5a6',
+                    '#16a085', '#27ae60', '#2980b9', '#8e44ad', '#2c3e50',
+                    '#1abc9c', '#2ecc71', '#3498db', '#9b59b6', '#34495e'];
 
 const styles = {
   root: {
-    background: 'linear-gradient(270deg, #32c8b4 40%, #5d87c6 60%)',
-    color: 'white',
-    padding: '0 30px',
-    boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .30)',
+    background: bgColors[r],
+    color: fontColors[r],
+    padding: '0px 0px'
   }
 };
 
