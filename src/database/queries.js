@@ -9,13 +9,24 @@ export function test(){
 }
 
 //==========================User-Related Query===============================================
-export function getUserStory(uid){
+export function getUserStories(uid){
     var ref = userRef.doc(uid.toString()).collection("stories")
 
     return ref.get().then(function(refSnapshot){
         let res = []
         refSnapshot.forEach(function(doc){
             doc && doc.exists ? res.push(doc.data().string) : null
+        })
+        return Promise.resolve(res)
+    })
+}
+
+export function getUsername(uid){
+    var ref = userRef.doc(uid.toString())
+    return ref.get().then(function(refSnapshot){
+        let res = []
+        refSnapshot.forEach(function(doc){
+            doc && doc.exists ? res.push(doc.data().username) : null
         })
         return Promise.resolve(res)
     })
