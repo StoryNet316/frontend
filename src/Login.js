@@ -1,14 +1,17 @@
-import React from 'react';
+import React, { Component } from 'react';
 
-import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
-import Card, { CardActions, CardContent } from 'material-ui/Card';
-import Button from 'material-ui/Button';
-import Typography from 'material-ui/Typography';
 
-import Input, { InputLabel } from 'material-ui/Input';
+import Button from 'material-ui/Button';
+
+import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
 import TextField from 'material-ui/TextField';
 import { FormControl } from 'material-ui/Form';
+import IconButton from 'material-ui/IconButton';
+import Visibility from 'material-ui-icons/Visibility';
+import VisibilityOff from 'material-ui-icons/VisibilityOff';
+
+import Grid from 'material-ui/Grid';
 
 const styles = theme => ({
   card: {
@@ -32,56 +35,73 @@ const styles = theme => ({
   },
 });
 
-function Login(props) {
-  const { classes } = props;
-  const bull = <span className={classes.bullet}>•</span>;
+class Login extends Component {
+  constructor(props){
+    super(props);
 
-  return (
-    <div>
-      <Card className={classes.card}>
-        <CardContent>
-          <Typography type="body1" className={classes.title}>
-            Please Login
-          </Typography>
+    this.state = {
+      password: '',
+      showPassword: false
+    };
+  }
 
-          <FormControl className={classes.formControl}>
-            <InputLabel
-              FormControlClasses={{
-              focused: classes.inputLabelFocused,
-              }}
-              htmlFor="custom-color-input"
-            >
-              Username
-            </InputLabel>
+  handleChange = prop => event => {
+    this.setState({ [prop]: event.target.value });
+  };
+
+  handleMouseDownPassword = event => {
+    event.preventDefault();
+  };
+
+  handleClickShowPasssword = () => {
+    this.setState({ showPassword: !this.state.showPassword });
+  };
+
+
+  render(){
+
+    return (
+      <div>
+        <h1>Please Login!</h1>
+
+        <Grid>
+          <Grid>
+            <FormControl>
+              <InputLabel>
+                Username
+              </InputLabel>
+              <Input
+                type="text"
+              />
+            </FormControl>
+          </Grid>
+          <Grid>
+            <FormControl>
+            <InputLabel>Password</InputLabel>
             <Input
-              classes={{
-                inkbar: classes.inputInkbar,
-              }}
-              id="custom-color-input"
+              id="password"
+              type={this.state.showPassword ? 'text' : 'password'}
+              value={this.state.password}
+              onChange={this.handleChange('password')}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={this.handleClickShowPasssword}
+                    onMouseDown={this.handleMouseDownPassword}
+                  >
+                    {this.state.showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              }
             />
+            </FormControl>
+          </Grid>
+        </Grid>
 
-            <InputLabel
-              FormControlClasses={{
-              focused: classes.inputLabelFocused,
-              }}
-              htmlFor="custom-color-input"
-            >
-              Password
-            </InputLabel>
-            <Input
-              classes={{
-                inkbar: classes.inputInkbar,
-              }}
-              id="custom-color-input"
-            />
+      </div>
+    )
+  }
 
-
-      </FormControl>
-
-        </CardContent>
-      </Card>
-    </div>
-  )
 
 }
 

@@ -2,7 +2,6 @@ import React from 'react';
 import AppBar from 'material-ui/AppBar';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
-import Button from 'material-ui/Button';
 
 import IconLabelTabs from './IconLabelTabs';
 
@@ -16,8 +15,7 @@ function ButtonAppBar(props) {
   return (
     <div>
       <AppBar position="static" classes={{
-        root: props.classes.root, // className, e.g. `OverridesClasses-root-X`
-        label: props.classes.label, // className, e.g. `OverridesClasses-label-X`
+        root: props.classes.root
         }}>
         <Toolbar>
           <Typography type="title" color="inherit">
@@ -38,10 +36,7 @@ const styles = {
     color: 'white',
     padding: '0 30px',
     boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .30)',
-  },
-  label: {
-    textTransform: 'capitalize',
-  },
+  }
 };
 
 

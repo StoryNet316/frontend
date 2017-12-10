@@ -5,6 +5,7 @@ import Tabs, { Tab } from 'material-ui/Tabs';
 import HomeIcon from 'material-ui-icons/Home';
 import HistoryIcon from 'material-ui-icons/History';
 import AccountIcon from 'material-ui-icons/AccountCircle';
+import SearchIcon from 'material-ui-icons/Search';
 
 class IconLabelTabs extends React.Component {
   // state = {
@@ -28,7 +29,9 @@ class IconLabelTabs extends React.Component {
         >
           <Tab icon={<HomeIcon />} value="/" label="Home" />
           <Tab icon={<HistoryIcon />} value="/history" label="History" />
+          <Tab icon={<SearchIcon />} value="/search" label="Search" />
           <Tab icon={<AccountIcon />} value="/login" label="Login" />
+
         </Tabs>
       </div>
     );

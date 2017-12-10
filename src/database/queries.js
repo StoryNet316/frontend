@@ -66,9 +66,9 @@ export function getEntitiesInStory(sid){
         });
 }
 
-export function setPublic(sid){
-    var ref = database.collection("stories");
-    return ref.doc(sid).update({
+export function setPublic(uid, sid){
+    var ref = database.collection("users").doc(uid.toString()).collection("stories").doc(sid);
+    return ref.update({
         privacy: false
     })
     .then(function() {
