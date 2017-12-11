@@ -81,8 +81,9 @@ class App extends Component {
 
 
   render() {
-      Query.getStoryNumber(2).then(function(res){
-          console.log(res)
+      //Query.initApp();
+      Query.getStoriesInEntity("Coca Cola").then(function(res){
+        console.log(res)
       })
 
     return (
