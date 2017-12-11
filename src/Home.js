@@ -10,9 +10,10 @@ import {Grid, TextField, Paper, Button } from 'material-ui';
 
 import { withStyles } from 'material-ui/styles';
 
-import * as Queries from './database/queries'
+import * as Queries from './database/queries';
 
-import GridList from './GridList'
+import GridList from './GridList';
+import { getSentiment } from './nlp';
 
 var testImages = Queries.testImages;
 
@@ -28,9 +29,9 @@ class Home extends Component {
         currentUser: props.currentUser,
         showingStory: false,
         currentStory: "",
-        currentSteps: [],
-        currentUrls: [],
+        images: [],
         privacyOn: false,
+        loading: false,
       };
 
       this.handleChange = this.handleChange.bind(this);
@@ -60,48 +61,61 @@ class Home extends Component {
 
     handleSubmit(event) {
       event.preventDefault();
-      var user = this.state.currentUser;
 
+      this.setState({
+        images: [],
+      })
+
+      var user = this.state.currentUser;
       if (!this.state.isLoggedIn) {
         alert("You must first log in or create an account before submitting a story!");
       }
       else {
-        const d = new Date();
+        this.setState({ loading: true })
+        getSentiment(this.state.story, (resp) => {
+          Queries.processJSON(resp, this.state.currentUser.uid, this.state.story, (sid) => {
 
-        Queries.getLatestSid().then((sidArray) => {
-          var sid = sidArray[0] + 1;
-          Queries.writeStoryData(user.uid, sid, d, this.state.story, this.state.privacyOn);
-          console.log("Done writing story!")
-          alert("User " + user.uid + " submitted story " + sid + " on " + d + "STORY: " + this.state.story);
-          this.loadStory(sid);
+            this.loadStory(sid)
+            
+          })
         })
-
-
-        this.setState({
-          showingStory: true,
-        })
-
-        // return new Promise(function (resolve, reject) {
-        //   resolve("s_test");
-        // })
-
       }
-
     }
 
     loadStory(sid) {
       var ref = database.collection("users").doc(this.state.currentUser.uid.toString()).collection("myStories").doc(sid.toString());
-
       const thisComponent = this;
 
-      ref.get().then(function(doc){
-        if(doc && doc.exists){
-          const string = doc.data().string;
 
+      ref.get().then(function(doc){
+
+        if(doc && doc.exists){
+
+          var story = doc.data()
           thisComponent.setState({
-            currentStory: string,
-            currentSteps: string.split(" "),
+            currentStory: story.string,
           })
+
+
+          const query = database.collection("stories").doc((story.sid).toString()).collection("myImages").orderBy("order");
+
+          query.get().then((querySnapshot) => {
+            let res = [];
+            querySnapshot.forEach(function(doc){
+                doc && doc.exists ? res.push(doc.data().url) : null;
+            })
+
+            
+            thisComponent.setState({
+              images: res,
+            })
+
+            console.log(res)
+
+            thisComponent.setState({ loading: false, showingStory: true })
+
+         })
+
 
         }
         else{
@@ -138,7 +152,9 @@ class Home extends Component {
 
 
     render() {
-
+      if (this.state.loading) {
+        return (<div/>)
+      } else {
       return (
         <div>
           <h2>Tell me a story!</h2>
@@ -190,7 +206,7 @@ class Home extends Component {
                   <p>
                     <b>{this.state.currentStory}</b>
 
-                    <GridList images={testImages}/>
+                    <GridList images={this.state.images}/>
                   </p>
                 </Grid>
                 <Grid item xs={1}/>
@@ -201,6 +217,7 @@ class Home extends Component {
 
         </div>
       );
+      }
     }
 
     /* Needed to update isLoggedIn on visit to empty path "....com/"*/
