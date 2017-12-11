@@ -7,6 +7,10 @@ const userRef = database.collection("users")
 //            console.log(dataSnapshot.docs);
 //     });
 //}
+
+//==========================Search for stories based on entity name===============================================
+
+
 //==========================JSON-related Query===============================================
 export function processJSON(data, uid, string){
     getLatestSid().then(function(sidres){
@@ -44,12 +48,13 @@ export function getUserStories(uid){
 
 export function getUsername(uid){
     var ref = userRef.doc(uid.toString())
-    return ref.get().then(function(refSnapshot){
-        let res = []
-        refSnapshot.forEach(function(doc){
-            doc && doc.exists ? res.push(doc.data().username) : null
-        })
-        return Promise.resolve(res)
+    return ref.get().then(function(doc) {
+        if (doc && doc.exists) {
+            return Promise.resolve(doc.data().numStories)
+        }
+        else {
+            return Promise.resolve("doc not found")
+        }
     })
 }
 
