@@ -8,7 +8,11 @@ import { withStyles } from 'material-ui/styles';
 
 import * as Queries from './database/queries'
 
-import { search , resultURL} from './BingImagesAPI'
+import GridList from './GridList'
+
+var testImages = Queries.testImages;
+
+// import { search , resultURL} from './BingImagesAPI'
 
 
 class Home extends Component {
@@ -28,7 +32,7 @@ class Home extends Component {
       this.handleSubmit = this.handleSubmit.bind(this);
       this.loadStory = this.loadStory.bind(this);
       // this.getURL = this.getURL.bind(this);
-      this.updatePictures = this.updatePictures.bind(this);
+      // this.updatePictures = this.updatePictures.bind(this);
   }
 
     handleChange(event) {
@@ -85,11 +89,9 @@ class Home extends Component {
             currentStory: string,
             currentSteps: string.split(" "),
           })
-          console.log("split")
 
         }
         else{
-          console.log("no split")
           return new Error("Oops");
         }
 
@@ -113,12 +115,12 @@ class Home extends Component {
     //     console.log(url)
     //   });
     // }
-
-    updatePictures() {
-      this.setState({
-        currentUrls: resultURL,
-      })
-    }
+    //
+    // updatePictures() {
+    //   this.setState({
+    //     currentUrls: resultURL,
+    //   })
+    // }
 
 
 
@@ -126,7 +128,7 @@ class Home extends Component {
 
       return (
         <div>
-          <h2>Tell me a story! (Only creates story "s_test")</h2>
+          <h2>Tell me a story!</h2>
 
           <Grid container>
             <Grid item xs={1} />
@@ -151,29 +153,18 @@ class Home extends Component {
           {this.state.showingStory ?
             <div>
               <Grid container>
-                <Grid item xs={2} />
-                <Grid item xs={8}>
+                <Grid item xs={1} />
+                <Grid item xs={10}>
                   <p>
                     <b>{this.state.currentStory}</b>
-                    <li>Steps:
-                      {this.state.currentSteps.map(function(step){
-                        return (
-                          <ol>
-                            {step}
-                          </ol>
 
-                        );
-                      })}
-                    </li>
-                    <img src={this.state.currentUrls} alt="result url"/>
+                    <GridList images={testImages}/>
                   </p>
                 </Grid>
-                <Grid item xs={2}/>
+                <Grid item xs={1}/>
               </Grid>
             </div>
             : null}
-
-            <Button onClick={this.updatePictures} raised color="default"> Update Pictures </Button>
 
         </div>
       );

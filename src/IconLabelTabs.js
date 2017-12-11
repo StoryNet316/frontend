@@ -1,5 +1,6 @@
 import React from 'react';
 import {withRouter} from "react-router-dom";
+import database from './database/config';
 
 import Tabs, { Tab } from 'material-ui/Tabs';
 import HomeIcon from 'material-ui-icons/Home';
@@ -12,6 +13,10 @@ class IconLabelTabs extends React.Component {
   constructor(props) {
       super(props);
 
+      this.state = {
+        counter: 0,
+      }
+
       this.handleChange = this.handleChange.bind(this);
   }
 
@@ -21,15 +26,30 @@ class IconLabelTabs extends React.Component {
   };
 
   render() {
+    const thisComponent = this;
+    database.collection("stories").orderBy("sid", "desc").limit(1)
+            .onSnapshot(function(querySnapshot) {
+                var res = [];
+                querySnapshot.forEach(function(doc) {
+                    res.push(doc.data().sid);
+                });
+
+                var count = parseInt(res, 10);
+
+                if(count != thisComponent.state.counter){
+                  thisComponent.setState({
+                    counter: parseInt(res, 10),
+                  })
+                }
+            })
 
     return (
       <div>
         <Tabs
           value={this.props.history.location.pathname}
           onChange={this.handleChange}
-          fullWidth
           indicatorColor="white"
-          textColor="contrast"
+          textcolor="contrast"
         >
           <Tab icon={<HomeIcon />} value="/home" label="Home" />
           <Tab icon={<SearchIcon />} value="/search" label="Search" />
@@ -38,6 +58,7 @@ class IconLabelTabs extends React.Component {
           { this.props.isLoggedIn ? <Tab icon={<AccountIcon />} value="/account" label="Account" /> :
                                     <Tab icon={<AccountIcon />} value="/login" label="Login" /> }
 
+          <h4>{this.state.counter} Stor.ios created to date!</h4>
         </Tabs>
       </div>
     );

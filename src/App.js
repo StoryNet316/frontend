@@ -13,7 +13,7 @@ import History from './History'
 import Search from './Search';
 import Login from './Login';
 import Account from './Account';
-import * as Query from './database/queries.js'
+import * as Queries from './database/queries.js'
 
 class App extends Component {
 
@@ -28,6 +28,8 @@ class App extends Component {
     this.isLoggedIn = this.isLoggedIn.bind(this);
     this.isLoggedIn();
 
+    // Uncomment for re-initialization
+    // Queries.initHistory();
 
   }
 
@@ -87,7 +89,7 @@ class App extends Component {
         <Router>
           <div>
             <ButtonAppBar isLoggedIn={this.state.isLoggedIn} />
-            <Route exact path="/" render={() => <Redirect to="/home"/>} />
+            <Route exact path="/" render={() => <Redirect to="/login"/>} />
             <Route exact path="/home" render={() => <Home currentUser={this.state.currentUser} isLoggedIn={this.state.isLoggedIn} />} />
             {/*<Route exact path="/home"
               render={() => !this.state.isLoggedIn ? <Login/> : <Home/>}

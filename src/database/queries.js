@@ -1,5 +1,5 @@
 import database from './config';
-console.log(database)
+
 const userRef = database.collection("users")
 //export function test(){
 //     database.collection("stories").orderBy("popularity").limit(3)
@@ -9,7 +9,6 @@ const userRef = database.collection("users")
 //}
 
 //==========================Search for stories based on entity name===============================================
-
 
 //==========================JSON-related Query===============================================
 export function processJSON(data, uid, string){
@@ -216,6 +215,7 @@ export function getTopStories(x){
   })
 }
 
+
 export function getRecentStories(uid, x){
   var ref = database.collection("users").doc(uid.toString()).collection("myStories");
   var query = ref.orderBy("timestamp", "desc").limit(x);
@@ -223,12 +223,11 @@ export function getRecentStories(uid, x){
   return query.get().then(function(querySnapshot){
       let res = []
       querySnapshot.forEach(function(doc){
-          doc && doc.exists ? res.push(doc.data().sid) : null
+          doc && doc.exists ? res.push(doc.data()) : null
       })
       return Promise.resolve(res)
   })
 }
-
 
 
 //===================Firestore Database Write==================================================
@@ -333,4 +332,45 @@ export function initApp() {
             writeImageData(i, 1000+i, 1000000+i, 'Coca Cola', 1, ['https://tse2.mm.bing.net/th?id=OIP.0_ezIcFekTq93JbSIhNVNQErDQ&pid=15.1'], 1);
         }
     }
+}
+
+export const testImages = [
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/McDonald%27s_Golden_Arches.svg/1200px-McDonald%27s_Golden_Arches.svg.png",
+  "https://tse2.mm.bing.net/th?id=OIP.0_ezIcFekTq93JbSIhNVNQErDQ&pid=15.1",
+  "https://pbs.twimg.com/profile_images/814263074639187968/Ioh1Qvuc.jpg",
+  "http://junglebiscuit.com/images/random/rand_image.pl",
+  "http://i0.kym-cdn.com/photos/images/facebook/001/118/366/602.jpg",
+  "https://specials-images.forbesimg.com/imageserve/593b26514bbe6f1b730b693a/416x416.jpg?background=000000&cropX1=111&cropX2=2108&cropY1=4&cropY2=2000",
+  "http://static.newworldencyclopedia.org/thumb/6/6c/Religious_syms.svg/250px-Religious_syms.svg.png",
+  "https://fthmb.tqn.com/5X-Mb_wzrmW542SNSe9THfzz52k=/3867x2578/filters:fill(auto,1)/chemistry-glassware-56a12a083df78cf772680235.jpg",
+  "https://cdn.thingiverse.com/renders/0d/da/c1/5e/89/740435visage_thumb_small.jpg",
+  "http://photoblogstop.com/wp-content/uploads/2012/07/Sierra_HDR_Panorama_DFX8048_2280x819_Q40_wm_mini.jpg",
+  "http://bourbonstreet.sportswar.com/wp-content/uploads/sites/27/2015/02/OK-dunks.jpeg",
+  "https://i1.sndcdn.com/avatars-000280149171-fijfh3-t500x500.jpg",
+  "http://lwlcdn.lwlies.com/wp-content/uploads/2016/10/boyz-n-the-hood-768x539-c-default.jpg",
+  "https://www.moneymozart.com/wp-content/uploads/2016/02/how-to-become-an-investment-banker.jpg",
+  "https://whatlifesays.files.wordpress.com/2012/03/poor-people-fo-real.jpg",
+  "https://kids.nationalgeographic.com/content/dam/kids/photos/animals/Fish/H-P/pufferfish-closeup.ngsversion.1427141760081.adapt.1900.1.jpg",
+  "https://i.pinimg.com/736x/2d/b3/65/2db36516ea9548f21d0c71fe5a0c1963--arctic-fox-cute-bird.jpg",
+  "http://wdy.h-cdn.co/assets/cm/15/09/480x552/54eb9e61c067c_-_gerbera-daisy-orange-xl.jpg",
+  "http://i0.kym-cdn.com/photos/images/original/001/250/664/15c.jpg_large",
+  "https://cdn.thinglink.me/api/image/588427922944032769/1240/10/scaletowidth"
+]
+
+export function initHistory() {
+  // user's accouint must be created
+  var d = new Date();
+  var story = "@"
+  var image = story + ".png"
+
+  for(var i = 0; i < 10; i++){
+    //add 10 stories
+    writeStoryData("DaoB3fu2FRfGl6vYMqfdK4I0HGJ2", i, d, story, false);
+    story += "@";
+    writeImageData("DaoB3fu2FRfGl6vYMqfdK4I0HGJ2", i, i, image, 0,
+    testImages[i], i);
+    writeImageData("DaoB3fu2FRfGl6vYMqfdK4I0HGJ2", i, i+10, image, 0,
+    testImages[i+10], i+10);
+
+  }
 }

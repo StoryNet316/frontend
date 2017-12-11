@@ -12,6 +12,7 @@ import GridList from './GridList';
 import HistoryItem from './HistoryItem'
 
 import * as Queries from './database/queries'
+import database from './database/config';
 
 
 class HistoryList extends Component{
@@ -21,43 +22,64 @@ class HistoryList extends Component{
 
     this.state = {
       currentUser: props.currentUser,
-      // openedItem: -1,
       recentStories: [],
+      recentImages: [],
       isLoading: false,
 
     }
-
-
-
-
   }
 
   componentWillMount(){
+    // Wait for queries to finish
     this.setState({
       isLoading: true,
     })
 
     const thisComponent = this;
+
+    // Massive query to get all sorted image arrays for top 10 most recent stories
     Queries.getRecentStories(this.state.currentUser.uid, 10).then(function (res){
       for(var i = 0; i < res.length; i++) {
         thisComponent.state.recentStories.push(res[i]);
       }
 
+      const stories = thisComponent.state.recentStories;
+
+      for(var i = 0; i < stories.length; i++){
+        const query = database.collection("stories").doc((stories[i].sid).toString()).collection("myImages").orderBy("order");
+
+        query.get().then((querySnapshot) => {
+          let res = [];
+          querySnapshot.forEach(function(doc){
+              doc && doc.exists ? res.push(doc.data().url) : null;
+          })
+
+          var arrayOfArrays = thisComponent.state.recentImages.slice();
+          arrayOfArrays.push(res);
+          thisComponent.setState({
+            recentImages: arrayOfArrays,
+          })
+
+          // thisComponent.setState({...thisComponent.state, thisComponent.state.recentImages: thisComponent.state.recentImages.append({res})})
+
+        })
+      }
+
+      // Done loading
       thisComponent.setState({
         isLoading: false,
       })
 
-    })
+    });
+
+
   }
 
-  handleClick() {
-    // Get sorted image array
-    
-  }
 
   render() {
+
     if(this.state.isLoading){
-      return(<div/>)//loading thing
+      return(<div/>) //loading thing
     }
     else{
       return (
@@ -66,13 +88,13 @@ class HistoryList extends Component{
             <Grid item xs={1} />
             <Grid item xs={10}>
               <List classes={{root: this.props.classes.root}}>
-              {this.state.recentStories.map(function(story) {
-                return (
-                  <div>
-                    <HistoryItem name={story}/>
-                    <Divider style={dividerStyle}/>
-                  </div>
-                )
+              {this.state.recentStories.map((story, i) => {
+                  return (
+                    <div key={i}>
+                      <HistoryItem name={story.string} date={story.timestamp} images={this.state.recentImages[i]} />
+                      <Divider style={dividerStyle}/>
+                    </div>
+                  )
               })}
 
               </List>

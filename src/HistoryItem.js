@@ -15,7 +15,8 @@ class HistoryItem extends Component {
     super(props);
 
     this.state = {
-      name: "Story",
+      name: props.name,
+      date: props.date,
       open: false,
     }
   }
@@ -29,12 +30,13 @@ class HistoryItem extends Component {
     return (
       <List>
       <ListItem button onClick={this.handleClick}>
+        {(this.state.date.getMonth() + 1) + "/" + this.state.date.getDate() + "/" + this.state.date.getFullYear()}
         <ListItemText inset primary={<b>{this.state.name}</b>} disableTypography />
         {this.state.open ? <ExpandLess /> : <ExpandMore />}
       </ListItem>
 
       <Collapse component="li" in={this.state.open} timeout="auto" unmountOnExit>
-        <GridList/>
+        <GridList images={this.props.images} />
       </Collapse>
       </List>
     )

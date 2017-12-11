@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import { GridList, GridListTile, GridListTileBar } from 'material-ui/GridList';
@@ -11,7 +11,7 @@ import pandaexpress from './resources/pandaexpress.png'
 import redmango from './resources/redmango.png'
 import theloop from './resources/theloop.png'
 
-const tileData = [
+const placeholder = [
   {
     img: aubonpain,
     title: "Au Bon Pain",
@@ -61,32 +61,74 @@ const styles = theme => ({
   },
 });
 
-function SingleLineGridList(props) {
-  const { classes } = props;
+class SingleLineGridList extends Component {
 
-  return (
-    <div className={classes.root}>
-      <GridList className={classes.gridList} cols={2.5}>
-        {tileData.map(tile => (
-          <GridListTile key={tile.img}>
-            <img src={tile.img} alt={tile.title} />
-            <GridListTileBar
-              title={tile.title}
-              classes={{
-                root: classes.titleBar,
-                title: classes.title,
-              }}
-              actionIcon={
-                <IconButton>
-                  <StarBorderIcon className={classes.title} />
-                </IconButton>
-              }
-            />
-          </GridListTile>
-        ))}
-      </GridList>
-    </div>
-  );
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      images: props.images,
+      tileData: [],
+      isLoading: false,
+    }
+  }
+
+  // Construct tile data here
+  componentWillMount() {
+
+    this.setState({
+      isLoading: true,
+    })
+
+    var tileData = [];
+    for(var i = 0; i < this.state.images.length; i++){
+      var tile = {
+        img: this.state.images[i],
+        title: "",
+      };
+      tileData.push(tile);
+    }
+
+
+    this.setState({
+      tileData: tileData,
+      isLoading: false,
+    })
+  }
+
+  render() {
+    const { classes } = this.props;
+    if(this.state.isLoading) {
+      return (<div>Loading...</div>)
+    }
+    else{
+      return (
+        <div className={classes.root}>
+          <GridList className={classes.gridList} cols={2.5}>
+            {this.state.tileData.map(tile => (
+              <GridListTile key={tile.img}>
+                <img src={tile.img} alt={tile.title} />
+                <GridListTileBar
+                  title={tile.title}
+                  classes={{
+                    root: classes.titleBar,
+                    title: classes.title,
+                  }}
+                  actionIcon={
+                    <IconButton>
+                      <StarBorderIcon className={classes.title} />
+                    </IconButton>
+                  }
+                />
+              </GridListTile>
+            ))}
+          </GridList>
+        </div>
+      );
+    }
+
+  }
+
 }
 
 SingleLineGridList.propTypes = {
