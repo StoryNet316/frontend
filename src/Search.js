@@ -4,9 +4,14 @@ import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
 
 import Grid from 'material-ui/Grid';
+import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List';
+import Collapse from 'material-ui/transitions/Collapse';
+import Divider from 'material-ui/Divider';
 
 import * as Queries from './database/queries'
 import database from './database/config';
+
+import HistoryItem from './HistoryItem'
 
 class Search extends Component {
 
@@ -14,140 +19,135 @@ class Search extends Component {
       super(props);
       this.state = {
         currentUser: props.currentUser,
-        uidValue: '',
-        uidStories: [],
-        numStories: 0,
-        username: '-',
-        urls: [],
+        entityValue: '',
+        resultStories: [],
+        resultImages: [],
+        isLoading: false,
       };
 
       this.handleChange = this.handleChange.bind(this);
-      this.handleSearchUID = this.handleSearchUID.bind(this);
-      this.handlePrivacyToggle = this.handlePrivacyToggle.bind(this);
+      this.handleSearch = this.handleSearch.bind(this);
   }
 
-  handleSearchUID(event){
+
+  handleSearch(event){
     event.preventDefault();
-    // console.log("searching for user " + this.state.uidValue);
-    //
-    // var ref = database.collection("users").doc(this.state.uidValue.toString()).collection("stories").doc("s1");
-    // var myData = "default data";
-    //
-    // const thisComponent = this;
-    //
-    // ref.get().then(function (doc) {
-    //   if (doc && doc.exists) {
-    //     myData = doc.data().string;
-    //     console.log(myData)
-    //
-    //     thisComponent.setState({
-    //       uidStories: myData
-    //     });
-    //
-    //
-    //   }
-    // }).catch(function (error){
-    //   console.log("could not fetch user stories: ", error)
-    // })
+
+    this.setState({
+      isLoading: true,
+      resultStories: [],
+      resultImages: [],
+    })
+
     const thisComponent = this;
-    Queries.getUserStories(this.state.uidValue)
-                  .then(function (data){
 
-                    thisComponent.setState({
-                          uidStories: data,
-                          numStories: data.length
-                        });
-                  })
+    // Massive query to get all sorted image arrays for relevant stories
+    Queries.getStoriesInEntity(this.state.entityValue).then((res) => {
+      for(var i = 0; i < res.length; i++) {
+        thisComponent.state.resultStories.push(res[i]);
 
-    Queries.getUsername(this.state.uidValue)
-                  .then(function (data){
-                    thisComponent.setState({
-                          username: data,
-                        });
-                  })
+      }
 
-    Queries.getEntitiesInStory(this.state.uidValue, "s1")
-                  .then(function(data){
-                    thisComponent.setState({
-                      urls: data,
-                    })
-                  })
+      const stories = thisComponent.state.resultStories;
+      console.log(stories)
 
-    // Queries.getEntitiesInStory(1,"s1")
-    //               .then(function(data){
-    //                 thisComponent.setState({
-    //                   urls: data,
-    //                 })
-    //               })
+      for(var i = 0; i < stories.length; i++){
+        const query = database.collection("stories").doc((stories[i].sid).toString()).collection("myImages").orderBy("order");
+
+        query.get().then((querySnapshot) => {
+          let res = [];
+          querySnapshot.forEach(function(doc){
+              doc && doc.exists ? res.push(doc.data().url) : null;
+          })
+
+          var arrayOfArrays = thisComponent.state.resultImages.slice();
+          arrayOfArrays.push(res);
+          thisComponent.setState({
+            resultImages: arrayOfArrays,
+          })
+
+        })
+      }
+
+      // Done loading
+      thisComponent.setState({
+        isLoading: false,
+      })
+
+    })
+
+
 
   }
 
   handleChange(event) {
-    this.setState({uidValue: event.target.value});
+    this.setState({entityValue: event.target.value});
   }
-
-  handlePrivacyToggle(event) {
-    alert('privacy toggled! for story s1');
-    Queries.setPublic(1, "s1");
-  }
-
 
   render(){
     const thisComponent = this;
 
-    return (
-      <div>
-        <h2 id="output">Stor.io Search (Entities only works for story "s1") </h2>
+    if(this.state.isLoading) {
+      return (<div/>);
+    }
+    else {
+      return (
+        <div>
+          <h2 id="output">Stor.io Search</h2>
+          <Grid container>
+            <Grid item xs={1}/>
+            <Grid item xs={10}>
+              <form onSubmit={this.handleSearch}>
+                <TextField
+                  placeholder="What story would you like to see?"
+                  helperText={`(Try McDonald's or Coca Cola)`}
+                  fullWidth
+                  type="search"
+                  onChange={this.handleChange}
+                  onSubmit={this.handleSearch}
+                />
+                <Button onClick={this.handleSearch} raised color="primary"> Search Entities </Button>
+              </form>
+            </Grid>
+            <Grid item xs={1}/>
 
-
-        <Grid container>
-          <Grid item xs={4}>
-            <h5>
-              User {this.state.uidValue}{"'s Profile:"}
-              <li>Username: {this.state.username}</li>
-              <li>Number of Stories: {this.state.numStories}</li>
-              <li>All Stories:
-                {this.state.uidStories.map(function(string){
+            <Grid item xs={1} />
+            <Grid item xs={10}>
+              <List style={listItemStyle}>
+              {this.state.resultStories.map((story, i) => {
                   return (
-                    <ol>
-                      {string}
-                    </ol>
-                  );
-                })}
-              </li>
-              <li>All Entities:
-                {this.state.urls.map(function(urls){
-                  return (
-                    <ol>
-                      {urls}
-                    </ol>
-                  );
-                })}
-              </li>
-            </h5>
+                    <div key={i}>
+                      <HistoryItem name={story.string} date={story.timestamp} images={this.state.resultImages[i]} />
+                      <Divider style={dividerStyle}/>
+                    </div>
+                  )
+              })}
+              </List>
+              test
+            </Grid>
+            <Grid item xs={1} />
+
           </Grid>
+        </div>
+      )
+    }
 
-          <Grid item xs={7}>
-            <form onSubmit={this.handleSearchUID}>
-              <TextField
-                placeholder="User ID"
-                helperText="(Try an integer between 1 and 20)"
-                fullWidth
-                type="search"
-                onChange={this.handleChange}
-                onSubmit={this.handleSearchUID}
-              />
-              <Button onClick={this.handleSearchUID} raised color="primary"> Search UID </Button>
-            </form>
-          </Grid>
-
-        </Grid>
-
-        <Button id="privacyToggle" onClick={this.handlePrivacyToggle}> Set Public </Button>
-      </div>
-    )
 
   }
 }
+
+const dividerStyle = {
+  background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
+  color: 'white',
+  height: 3,
+  padding: '0 30px',
+  boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .30)',
+};
+
+const listItemStyle = {
+  background: "black",
+  color: "white",
+  padding: '0px 0px'
+};
 
 export default Search;

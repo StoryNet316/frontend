@@ -49,7 +49,7 @@ class IconLabelTabs extends React.Component {
           value={this.props.history.location.pathname}
           onChange={this.handleChange}
           indicatorColor="white"
-          textcolor="contrast"
+          textColor="contrast"
         >
           <Tab icon={<HomeIcon />} value="/home" label="Home" />
           <Tab icon={<SearchIcon />} value="/search" label="Search" />

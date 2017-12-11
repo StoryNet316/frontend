@@ -22,6 +22,7 @@ export function processJSON(data, uid, string){
         for(var i = 0; i < json.head.length; i++){
             var headRef = json.head
             writeEntityInStoryData(uid, sid, headRef[i].name, headRef[i].order, headRef[i].sentiment);
+            writeStoryInEntityData(headRef[i].name, sid, time, string, false);
 
             for(var j = 0; j < json.head[i].image.length; i++){
                 var imageRef = headRef[i].image
@@ -116,6 +117,17 @@ export function getLatestSid(){
 
 
 //==========================Story-Related Query===============================================
+
+export function getStoriesInEntity(name){
+    var ref = database.collection("entity").doc(name).collection("StoriesInEntity")
+    return ref.get().then(function(refSnapshot){
+        let res = []
+        refSnapshot.forEach(function(doc){
+            doc && doc.exists ? res.push(doc.data()) : null
+        })
+        return Promise.resolve(res)
+    })
+}
 
 export function getEntitiesInStory(uid, sid){
     var ref = userRef.doc(uid.toString()).collection("stories").doc(sid.toString()).collection("entities");
@@ -279,6 +291,16 @@ export function writeEntityData(name) {
   });
 }
 
+export function writeStoryInEntityData(entity, sid, timestamp, string, privacy){
+  database.collection("entity").doc(entity).collection("StoriesInEntity").doc(sid.toString()).set({
+    sid: sid,
+    timestamp: timestamp,
+    string: string,
+    popularity: 0,
+    privacy: privacy
+});
+}
+
 export function writeImageData(uid, sid, iid, name, sentiment, url, order) {
         database.collection("image").doc(iid.toString()).set({
             uid: uid,
@@ -323,12 +345,14 @@ export function initApp() {
             writeStoryData(i, 1000+i, d, 'I ate McDonald\'s this morning!', false);
             writeEntityInStoryData(i, 1000+i, 'McDonald\'s', 1, 0);
             writeEntityData('McDonald\'s');
+            writeStoryInEntityData('McDonald\'s', 1000+i, d, 'I ate McDonald\'s this morning!', false);
             writeImageData(i, 1000+i, 1000000+i, 'McDonald\'s', 1, ['https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/McDonald%27s_Golden_Arches.svg/1200px-McDonald%27s_Golden_Arches.svg.png'], 1);
         }
         else{
             writeStoryData(i, 1000+i, d, 'I drank Coca Cola this evening!', false);
             writeEntityInStoryData(i, 1000+i, 'Coca Cola', 1, 0);
             writeEntityData('Coca Cola');
+            writeStoryInEntityData('Coca Cola', 1000+i, d, 'I drank Coca Cola this evening!', false);
             writeImageData(i, 1000+i, 1000000+i, 'Coca Cola', 1, ['https://tse2.mm.bing.net/th?id=OIP.0_ezIcFekTq93JbSIhNVNQErDQ&pid=15.1'], 1);
         }
     }
@@ -357,7 +381,7 @@ export const testImages = [
   "https://cdn.thinglink.me/api/image/588427922944032769/1240/10/scaletowidth"
 ]
 
-export function initHistory() {
+export function grandInit() {
   // user's accouint must be created
   var d = new Date();
   var story = "@"

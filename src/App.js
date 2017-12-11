@@ -29,7 +29,7 @@ class App extends Component {
     this.isLoggedIn();
 
     // Uncomment for re-initialization
-    // Queries.initHistory();
+    // Queries.grandInit();
 
   }
 
