@@ -98,8 +98,8 @@ class Login extends Component {
 
           <Grid item xs={2} />
           <Grid item xs={8}>
-            <FormControl fullWidth>
-              <InputLabel required onSubmit={this.handleLogin}>Password</InputLabel>
+            <FormControl onSubmit={this.handleLogin} fullWidth>
+              <InputLabel required>Password</InputLabel>
               <Input
                 id="password"
                 type={this.state.showPassword ? 'text' : 'password'}

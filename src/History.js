@@ -17,7 +17,7 @@ class History extends Component {
     return (
       <div>
         <h1>Your Top 10 Most Recent Stor.ios</h1>
-        <HistoryList/>
+        <HistoryList currentUser={this.props.currentUser}/>
 
       </div>
     )

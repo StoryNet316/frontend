@@ -81,9 +81,6 @@ class App extends Component {
 
 
   render() {
-      Query.getLatestSid().then(function(res){
-          console.log(res)
-      })
 
     return (
       <div className="App">
@@ -100,7 +97,7 @@ class App extends Component {
               render={() => !this.state.isLoggedIn ? <Login/> : <Search/>}
             />*/}
             <Route exact path="/history"
-              render={() => !this.state.isLoggedIn ? <Login/> : <History/>}
+              render={() => !this.state.isLoggedIn ? <Login/> : <History currentUser={this.state.currentUser}/>}
             />
             <Route exact path="/login"
               render={() => !this.state.isLoggedIn ? <Login/> : <Home currentUser={this.state.currentUser} isLoggedIn={this.state.isLoggedIn} />}

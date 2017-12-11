@@ -210,6 +210,20 @@ export function topStories(x){
   })
 }
 
+export function recentStories(uid, x){
+  var ref = database.collection("users").doc(uid.toString()).collection("myStories");
+  var query = ref.orderBy("timestamp", "desc").limit(x);
+
+  return query.get().then(function(querySnapshot){
+      let res = []
+      querySnapshot.forEach(function(doc){
+          doc && doc.exists ? res.push(doc.data().string) : null
+      })
+      return Promise.resolve(res)
+  })
+}
+
+
 
 //===================Firestore Database Write==================================================
 export function writeUserData(uid, username, numStories){
