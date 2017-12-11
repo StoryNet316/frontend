@@ -11,27 +11,31 @@ const userRef = database.collection("users")
 //==========================Search for stories based on entity name===============================================
 
 //==========================JSON-related Query===============================================
-export function processJSON(data, uid, string){
+export function processJSON(data, uid, string, cb){
     getLatestSid().then(function(sidres){
-        var sid = sidres[0];
-        var json = JSON.parse(data);
-        var time = new Date();
-
-        writeStoryData(uid, sid, time, string, false);
-
-        for(var i = 0; i < json.head.length; i++){
-            var headRef = json.head
-            writeEntityInStoryData(uid, sid, headRef[i].name, headRef[i].order, headRef[i].sentiment);
-            writeStoryInEntityData(headRef[i].name, sid, time, string, false);
-
-            for(var j = 0; j < json.head[i].image.length; i++){
-                var imageRef = headRef[i].image
-                writeImageData(uid, sid, imageRef[j].iid, headRef[i].name, headRef[i].sentiment, imageRef[j].url, headRef[i].order);
-            }
-        }
-
-    })
+      var sid = sidres[0] + 1;
+      var time = new Date();
+      var iid = 0;
+      var promises = [];
+      promises.push(writeStoryData(uid, sid, time, string, false))
+      data.map(entity => {
+      	console.log(entity)
+        promises.push(writeEntityInStoryData(uid, sid, entity.name, 0, 0));
+        promises.push(writeStoryInEntityData(entity.name, sid, time, string, false));
+        console.log(entity.images)
+        console.log(entity.images[0])
+        promises.push(writeImageData(uid, sid, iid, entity.name, 0, entity.images[0].url, 0))
+        iid += 1
+        // entity.images.map(image => {
+        //   promises.push(writeImageData(uid, sid, image.iid, entity.name, 0, image.url, 0));
+        // })
+      })
+      Promise.all(promises).then(() => {
+      	cb(sid)
+      })
+   	})
 }
+
 
 //==========================User-Related Query===============================================
 export function getUserStories(uid){
@@ -252,37 +256,49 @@ export function writeUserData(uid, username, numStories){
 }
 
 export function writeStoryData(uid, sid, timestamp, string, privacy) {
-    database.collection("users").doc(uid.toString()).collection("myStories").doc(sid.toString()).set({
+		var promises = []
+    promises.push(database.collection("users").doc(uid.toString()).collection("myStories").doc(sid.toString()).set({
         sid: sid,
         timestamp: timestamp,
         string: string,
         popularity: 0,
         privacy: privacy
-    });
+    }))
 
-    database.collection("stories").doc(sid.toString()).set({
+    promises.push(database.collection("stories").doc(sid.toString()).set({
         sid: sid,
         uid: uid,
         timestamp: timestamp,
         string: string,
         popularity: 0,
         privacy: privacy
-    });
+    }))
 
-    numStoriesIncrement(uid)
+    Promise.all(promises).then(() => {
+    	numStoriesIncrement(uid)
+    	return Promise.resolve()
+    }).catch(error => {
+    	console.log(error)
+    })
 }
 
 export function writeEntityInStoryData(uid, sid, estring, order, sentiment) {
-    database.collection("users").doc(uid.toString()).collection("myStories").doc(sid.toString()).collection("entities").doc(estring).set({
-        estring: estring,
-        order: order,
-        sentiment: sentiment //0=negative 1=neutral 2=positive
-    });
-    database.collection("stories").doc(sid.toString()).collection("entities").doc(estring).set({
-        estring: estring,
-        order: order,
-        sentiment: sentiment //0=negative 1=neutral 2=positive
-    });
+	var promises = []
+  promises.push(database.collection("users").doc(uid.toString()).collection("myStories").doc(sid.toString()).collection("entities").doc(estring).set({
+      estring: estring,
+      order: order,
+      sentiment: sentiment //0=negative 1=neutral 2=positive
+  }))
+  promises.push(database.collection("stories").doc(sid.toString()).collection("entities").doc(estring).set({
+      estring: estring,
+      order: order,
+      sentiment: sentiment //0=negative 1=neutral 2=positive
+  }))
+  Promise.all(promises).then(() => {
+  	return Promise.resolve()
+  }).catch(error => {
+    	console.log(error)
+  })
 }
 
 export function writeEntityData(name) {
@@ -292,17 +308,18 @@ export function writeEntityData(name) {
 }
 
 export function writeStoryInEntityData(entity, sid, timestamp, string, privacy){
-  database.collection("entity").doc(entity).collection("StoriesInEntity").doc(sid.toString()).set({
+  return database.collection("entity").doc(entity).collection("StoriesInEntity").doc(sid.toString()).set({
     sid: sid,
     timestamp: timestamp,
     string: string,
     popularity: 0,
     privacy: privacy
-});
+	});
 }
 
 export function writeImageData(uid, sid, iid, name, sentiment, url, order) {
-        database.collection("image").doc(iid.toString()).set({
+	var promises = [];
+    promises.push(database.collection("image").doc(iid.toString()).set({
             uid: uid,
             sid: sid,
             iid: iid,
@@ -311,9 +328,9 @@ export function writeImageData(uid, sid, iid, name, sentiment, url, order) {
             url: url,
             numVotes: 0,
             order: order,
-        })
+        }))
 
-        database.collection("users").doc(uid.toString()).collection("myStories").doc(sid.toString()).collection("myImages").doc(iid.toString()).set({
+   	promises.push(database.collection("users").doc(uid.toString()).collection("myStories").doc(sid.toString()).collection("myImages").doc(iid.toString()).set({
             uid: uid,
             sid: sid,
             iid: iid,
@@ -322,9 +339,9 @@ export function writeImageData(uid, sid, iid, name, sentiment, url, order) {
             url: url,
             numVotes: 0,
             order: order,
-        });
+        }))
 
-        database.collection("stories").doc(sid.toString()).collection("myImages").doc(iid.toString()).set({
+    promises.push(database.collection("stories").doc(sid.toString()).collection("myImages").doc(iid.toString()).set({
             uid: uid,
             sid: sid,
             iid: iid,
@@ -333,7 +350,12 @@ export function writeImageData(uid, sid, iid, name, sentiment, url, order) {
             url: url,
             numVotes: 0,
             order: order,
-        });
+        }))
+  Promise.all(promises).then(() => {
+  	return Promise.resolve()
+  }).catch(error => {
+    	console.log(error)
+  })
 }
 
 export function initApp() {

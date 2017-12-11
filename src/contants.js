@@ -1,0 +1,1 @@
+export const GOOGLE_APPLICATION_CREDENTIALS="/home/Thomas/courses/comsci316/project/creds/test-16eb2f590f3d.json"
