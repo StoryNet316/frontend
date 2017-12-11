@@ -81,7 +81,7 @@ class App extends Component {
 
 
   render() {
-      Query.getLatestSid().then(function(res){
+      Query.getStoryNumber(2).then(function(res){
           console.log(res)
       })
 
