@@ -28,7 +28,7 @@ class App extends Component {
     this.isLoggedIn = this.isLoggedIn.bind(this);
     this.isLoggedIn();
 
-    // Uncomment for re-initialization
+    // Uncomment for grand re-initialization
     // Queries.grandInit();
 
   }

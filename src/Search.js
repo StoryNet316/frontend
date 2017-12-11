@@ -20,13 +20,18 @@ class Search extends Component {
       this.state = {
         currentUser: props.currentUser,
         entityValue: '',
+        uidValue: "",
         resultStories: [],
         resultImages: [],
         isLoading: false,
+        uidStories: [],
+        uidImages: [],
       };
 
       this.handleChange = this.handleChange.bind(this);
       this.handleSearch = this.handleSearch.bind(this);
+      this.handleChangeUID = this.handleChangeUID.bind(this);
+      this.handleSearchUID = this.handleSearchUID.bind(this);
   }
 
 
@@ -49,7 +54,7 @@ class Search extends Component {
       }
 
       const stories = thisComponent.state.resultStories;
-      console.log(stories)
+
 
       for(var i = 0; i < stories.length; i++){
         const query = database.collection("stories").doc((stories[i].sid).toString()).collection("myImages").orderBy("order");
@@ -76,12 +81,65 @@ class Search extends Component {
 
     })
 
+  }
+
+  handleSearchUID(event){
+    event.preventDefault();
+
+
+    this.setState({
+      isLoading: true,
+      uidStories: [],
+      uidImages: [],
+    })
+
+
+    const thisComponent = this;
+
+    Queries.getUserStories(this.state.uidValue).then((res) => {
+      for(var i = 0; i < res.length; i++) {
+        thisComponent.state.uidStories.push(res[i]);
+
+      }
+
+      const stories = thisComponent.state.uidStories;
+
+
+      for(var i = 0; i < stories.length; i++){
+        const query = database.collection("stories").doc((stories[i].sid).toString()).collection("myImages").orderBy("order");
+
+        query.get().then((querySnapshot) => {
+          let res = [];
+          querySnapshot.forEach(function(doc){
+              doc && doc.exists ? res.push(doc.data().url) : null;
+          })
+
+          var arrayOfArrays = thisComponent.state.uidImages.slice();
+          arrayOfArrays.push(res);
+          thisComponent.setState({
+            uidImages: arrayOfArrays,
+          })
+
+        })
+      }
+
+      // Done loading
+      thisComponent.setState({
+        isLoading: false,
+      })
+    })
 
 
   }
 
+
   handleChange(event) {
     this.setState({entityValue: event.target.value});
+  }
+
+  handleChangeUID(event) {
+    this.setState({uidValue: event.target.value});
+
   }
 
   render(){
@@ -114,18 +172,49 @@ class Search extends Component {
             <Grid item xs={1} />
             <Grid item xs={10}>
               <List style={listItemStyle}>
-              {this.state.resultStories.map((story, i) => {
+              {this.state.resultStories.length != 0 ? this.state.resultStories.map((story, i) => {
                   return (
                     <div key={i}>
                       <HistoryItem name={story.string} date={story.timestamp} images={this.state.resultImages[i]} />
                       <Divider style={dividerStyle}/>
                     </div>
                   )
-              })}
+              }) : "No search results found. Please try another search!"}
               </List>
-              test
             </Grid>
             <Grid item xs={1} />
+
+            <Grid item xs={1} />
+            <Grid item xs={10}>
+              <form onSubmit={this.handleSearchUID}>
+                <TextField
+                  placeholder="Enter a UID"
+                  helperText={`(Try integers 1 through 20)`}
+                  fullWidth
+                  type="search"
+                  onChange={this.handleChangeUID}
+                  onSubmit={this.handleSearchUID}
+                />
+                <Button onClick={this.handleSearchUID} raised color="primary"> Search By UID </Button>
+              </form>
+            </Grid>
+            <Grid item xs={1} />
+
+            <Grid item xs={1} />
+            <Grid item xs={10}>
+              <List style={listItemStyle}>
+              {this.state.uidStories.length != 0 ? this.state.uidStories.map((story, i) => {
+                  return (
+                    <div key={i}>
+                      <HistoryItem name={story.string} date={story.timestamp} images={this.state.uidImages[i]} />
+                      <Divider style={dividerStyle}/>
+                    </div>
+                  )
+              }) : "No search results found. Please try another search!"}
+              </List>
+            </Grid>
+            <Grid item xs={1} />
+
 
           </Grid>
         </div>

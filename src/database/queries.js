@@ -40,7 +40,7 @@ export function getUserStories(uid){
     return ref.get().then(function(refSnapshot){
         let res = []
         refSnapshot.forEach(function(doc){
-            doc && doc.exists ? res.push(doc.data().string) : null
+            doc && doc.exists ? res.push(doc.data()) : null
         })
         return Promise.resolve(res)
     })
@@ -285,20 +285,24 @@ export function writeEntityInStoryData(uid, sid, estring, order, sentiment) {
     });
 }
 
-export function writeEntityData(name) {
-    database.collection("entity").doc(name).set({
-      name: name
-  });
-}
+// export function writeEntityData(name) {
+//     database.collection("entity").doc(name).set({
+//       name: name
+//   });
+// }
 
 export function writeStoryInEntityData(entity, sid, timestamp, string, privacy){
+  database.collection("entity").doc(entity).set({
+    name: entity
+  });
+
   database.collection("entity").doc(entity).collection("StoriesInEntity").doc(sid.toString()).set({
     sid: sid,
     timestamp: timestamp,
     string: string,
     popularity: 0,
     privacy: privacy
-});
+  });
 }
 
 export function writeImageData(uid, sid, iid, name, sentiment, url, order) {
@@ -344,16 +348,21 @@ export function initApp() {
         if(i <= 10){
             writeStoryData(i, 1000+i, d, 'I ate McDonald\'s this morning!', false);
             writeEntityInStoryData(i, 1000+i, 'McDonald\'s', 1, 0);
-            writeEntityData('McDonald\'s');
             writeStoryInEntityData('McDonald\'s', 1000+i, d, 'I ate McDonald\'s this morning!', false);
             writeImageData(i, 1000+i, 1000000+i, 'McDonald\'s', 1, ['https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/McDonald%27s_Golden_Arches.svg/1200px-McDonald%27s_Golden_Arches.svg.png'], 1);
+            writeImageData(i, 1000+i, 1100000+i, 'McDonald\'s', 1, ['https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/McDonald%27s_Golden_Arches.svg/1200px-McDonald%27s_Golden_Arches.svg.png'], 1);
+            writeImageData(i, 1000+i, 1110000+i, 'McDonald\'s', 1, ['https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/McDonald%27s_Golden_Arches.svg/1200px-McDonald%27s_Golden_Arches.svg.png'], 1);
+            writeImageData(i, 1000+i, 1111000+i, 'McDonald\'s', 1, ['https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/McDonald%27s_Golden_Arches.svg/1200px-McDonald%27s_Golden_Arches.svg.png'], 1);
         }
         else{
             writeStoryData(i, 1000+i, d, 'I drank Coca Cola this evening!', false);
             writeEntityInStoryData(i, 1000+i, 'Coca Cola', 1, 0);
-            writeEntityData('Coca Cola');
             writeStoryInEntityData('Coca Cola', 1000+i, d, 'I drank Coca Cola this evening!', false);
             writeImageData(i, 1000+i, 1000000+i, 'Coca Cola', 1, ['https://tse2.mm.bing.net/th?id=OIP.0_ezIcFekTq93JbSIhNVNQErDQ&pid=15.1'], 1);
+            writeImageData(i, 1000+i, 1100000+i, 'Coca Cola', 1, ['https://tse2.mm.bing.net/th?id=OIP.0_ezIcFekTq93JbSIhNVNQErDQ&pid=15.1'], 1);
+            writeImageData(i, 1000+i, 1110000+i, 'Coca Cola', 1, ['https://tse2.mm.bing.net/th?id=OIP.0_ezIcFekTq93JbSIhNVNQErDQ&pid=15.1'], 1);
+            writeImageData(i, 1000+i, 1111000+i, 'Coca Cola', 1, ['https://tse2.mm.bing.net/th?id=OIP.0_ezIcFekTq93JbSIhNVNQErDQ&pid=15.1'], 1);
+            writeImageData(i, 1000+i, 1111100+i, 'Coca Cola', 1, ['https://tse2.mm.bing.net/th?id=OIP.0_ezIcFekTq93JbSIhNVNQErDQ&pid=15.1'], 1);
         }
     }
 }
@@ -381,20 +390,36 @@ export const testImages = [
   "https://cdn.thinglink.me/api/image/588427922944032769/1240/10/scaletowidth"
 ]
 
+/*
+UID: DaoB3fu2FRfGl6vYMqfdK4I0HGJ2
+email: hminas@mail.com
+password: hminas1
+*/
+var uid = "DaoB3fu2FRfGl6vYMqfdK4I0HGJ2"
+
 export function grandInit() {
   // user's accouint must be created
   var d = new Date();
   var story = "@"
   var image = story + ".png"
 
+  initApp();
+
   for(var i = 0; i < 10; i++){
     //add 10 stories
     writeStoryData("DaoB3fu2FRfGl6vYMqfdK4I0HGJ2", i, d, story, false);
-    story += "@";
     writeImageData("DaoB3fu2FRfGl6vYMqfdK4I0HGJ2", i, i, image, 0,
     testImages[i], i);
     writeImageData("DaoB3fu2FRfGl6vYMqfdK4I0HGJ2", i, i+10, image, 0,
     testImages[i+10], i+10);
+    writeImageData("DaoB3fu2FRfGl6vYMqfdK4I0HGJ2", i, i+100, image, 0,
+    testImages[i+100 % 20], i+100);
+    writeImageData("DaoB3fu2FRfGl6vYMqfdK4I0HGJ2", i, i+1000, image, 0,
+    testImages[i+1000 % 20], i+1000);
+    writeImageData("DaoB3fu2FRfGl6vYMqfdK4I0HGJ2", i, i+10000, image, 0,
+    testImages[i+10000 % 20], i+10000);
 
+    writeStoryInEntityData(story, i, d, story, false);
+    story += "@";
   }
 }
