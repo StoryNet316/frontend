@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import * as firebase from 'firebase';
 import database from './database/config';
+import PropTypes from 'prop-types';
+import Switch from 'material-ui/Switch';
+import green from 'material-ui/colors/green';
+import { FormControlLabel, FormGroup } from 'material-ui/Form';
 
 import {Grid, TextField, Paper, Button } from 'material-ui';
 
@@ -26,11 +30,14 @@ class Home extends Component {
         currentStory: "",
         currentSteps: [],
         currentUrls: [],
+        privacyOn: false,
       };
 
       this.handleChange = this.handleChange.bind(this);
       this.handleSubmit = this.handleSubmit.bind(this);
       this.loadStory = this.loadStory.bind(this);
+      this.handleChangePrivacy = this.handleChangePrivacy.bind(this);
+
       // this.getURL = this.getURL.bind(this);
       // this.updatePictures = this.updatePictures.bind(this);
   }
@@ -45,6 +52,12 @@ class Home extends Component {
 
     }
 
+    handleChangePrivacy(){
+        this.setState({
+            privacyOn: !(this.state.privacyOn)
+        })
+    }
+
     handleSubmit(event) {
       event.preventDefault();
       var user = this.state.currentUser;
@@ -57,7 +70,7 @@ class Home extends Component {
 
         Queries.getLatestSid().then((sidArray) => {
           var sid = sidArray[0] + 1;
-          Queries.writeStoryData(user.uid, sid, d, this.state.story, false);
+          Queries.writeStoryData(user.uid, sid, d, this.state.story, this.state.privacyOn);
           console.log("Done writing story!")
           alert("User " + user.uid + " submitted story " + sid + " on " + d + "STORY: " + this.state.story);
           this.loadStory(sid);
@@ -147,13 +160,32 @@ class Home extends Component {
                 />
               </form>
             </Grid>
+            <Grid item xs={1}/>
+
+            <Grid item xs={3}/>
+            <Grid item xs={6}>
+                <FormGroup>
+                    <FormControlLabel
+                    control={
+                        <Switch
+                        style={switchStyle}
+                        checked={this.state.privacyOn}
+                        onChange={this.handleChangePrivacy}
+                        aria-label="checkedD"/>
+                    }
+                    label="Make your story private!"
+                    />
+                </FormGroup>
+            </Grid>
+            <Grid item xs={3}/>
+
 
           </Grid>
 
           {this.state.showingStory ?
             <div>
               <Grid container>
-                <Grid item xs={1} />
+                <Grid item xs={1}/>
                 <Grid item xs={10}>
                   <p>
                     <b>{this.state.currentStory}</b>
@@ -163,6 +195,7 @@ class Home extends Component {
                 </Grid>
                 <Grid item xs={1}/>
               </Grid>
+
             </div>
             : null}
 
@@ -195,5 +228,13 @@ class Home extends Component {
     }
 }
 
-
+const switchStyle = {
+    bar: {},
+  checked: {
+    color: green[500],
+    '& + $bar': {
+      backgroundColor: green[500],
+    },
+  },
+};
 export default Home;
