@@ -108,7 +108,8 @@ export function getLatestSid(){
     return query.get().then(function(querySnapshot){
         let res = []
         querySnapshot.forEach(function(doc){
-            doc && doc.exists ? res.push(doc.data().sid) : null
+          console.log(doc.data().sid)
+            doc && doc.exists ? res.push(parseInt(doc.data().sid)) : null
         })
         return Promise.resolve(res)
     })
@@ -202,7 +203,7 @@ export function upvoteStory(uid, sid){
     })
 }
 
-export function topStories(x){
+export function getTopStories(x){
   var ref = database.collection("stories");
   var query = ref.orderBy("popularity").limit(x);
 
@@ -215,14 +216,14 @@ export function topStories(x){
   })
 }
 
-export function recentStories(uid, x){
+export function getRecentStories(uid, x){
   var ref = database.collection("users").doc(uid.toString()).collection("myStories");
   var query = ref.orderBy("timestamp", "desc").limit(x);
 
   return query.get().then(function(querySnapshot){
       let res = []
       querySnapshot.forEach(function(doc){
-          doc && doc.exists ? res.push(doc.data().string) : null
+          doc && doc.exists ? res.push(doc.data().sid) : null
       })
       return Promise.resolve(res)
   })

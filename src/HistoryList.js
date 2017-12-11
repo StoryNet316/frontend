@@ -21,55 +21,68 @@ class HistoryList extends Component{
 
     this.state = {
       currentUser: props.currentUser,
-      openedItem: -1,
-      topStories: [],
+      // openedItem: -1,
+      recentStories: [],
+      isLoading: false,
 
     }
-    console.log("before query")
-    Queries.recentStories(this.state.currentUser.uid, 10).then(function (res){
-      for(var i = 0; i < res.length; i++) {
-        this.state.topStories.push(res[i]);
-        console.log(this.state.topStories)
-      }
-    })
-    console.log("after query")
+
+
 
 
   }
 
-  handleClick(id) {
-    if(id == this.state.openedItem) {
-      this.setState({
-        openedItem: -1,
+  componentWillMount(){
+    this.setState({
+      isLoading: true,
+    })
+
+    const thisComponent = this;
+    Queries.getRecentStories(this.state.currentUser.uid, 10).then(function (res){
+      for(var i = 0; i < res.length; i++) {
+        thisComponent.state.recentStories.push(res[i]);
+      }
+
+      thisComponent.setState({
+        isLoading: false,
       })
-    }
-    else {
-      this.setState({
-        openedItem: id,
-      })
-    }
+
+    })
+  }
+
+  handleClick() {
+    // Get sorted image array
+    
   }
 
   render() {
-    return (
-      <div>
-        <Grid container>
-          <Grid item xs={1} />
-          <Grid item xs={10}>
-            <List classes={{root: this.props.classes.root}}>
-              {this.state.topStories.map((story, i) => {
-                <div>
-                  <HistoryItem name={story} open={this.state.openedItem == i ? true : false} onClick={this.handleClick(this, i)}/>
-                  <Divider style={dividerStyle}/>
-                </div>
+    if(this.state.isLoading){
+      return(<div/>)//loading thing
+    }
+    else{
+      return (
+        <div>
+          <Grid container>
+            <Grid item xs={1} />
+            <Grid item xs={10}>
+              <List classes={{root: this.props.classes.root}}>
+              {this.state.recentStories.map(function(story) {
+                return (
+                  <div>
+                    <HistoryItem name={story}/>
+                    <Divider style={dividerStyle}/>
+                  </div>
+                )
               })}
 
-            </List>
+              </List>
+            </Grid>
+            <Grid item xs={1} />
           </Grid>
-          <Grid item xs={1} />
-        </Grid>
-      </div>
-    )
+        </div>
+      );
+    }
+
   }
 
 }
