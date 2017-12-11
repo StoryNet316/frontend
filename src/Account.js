@@ -16,7 +16,6 @@ class Account extends Component {
     this.handleSignout = this.handleSignout.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleUpdateUsername = this.handleUpdateUsername.bind(this);
-    this.updatePictures = this.updatePictures.bind(this);
   }
 
 

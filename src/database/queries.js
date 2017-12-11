@@ -8,19 +8,6 @@ const userRef = database.collection("users")
 //     });
 //}
 
-//==========================Search for sid based on entity name===============================================
-export function getStoriesInEntity(name){
-    var ref = database.collection("entity").doc(name).collection("StoriesInEntity")
-    return ref.get().then(function(refSnapshot){
-        let res = []
-        refSnapshot.forEach(function(doc){
-            doc && doc.exists ? res.push(doc.data().sid) : null
-        })
-        return Promise.resolve(res)
-    })
-}
-
-
 //==========================JSON-related Query===============================================
 export function processJSON(data, uid, string){
     getLatestSid().then(function(sidres){
@@ -119,13 +106,25 @@ export function getLatestSid(){
     return query.get().then(function(querySnapshot){
         let res = []
         querySnapshot.forEach(function(doc){
-            doc && doc.exists ? res.push(doc.data().sid) : null
+          console.log(doc.data().sid)
+            doc && doc.exists ? res.push(parseInt(doc.data().sid)) : null
         })
         return Promise.resolve(res)
     })
   }
 
 //==========================Story-Related Query===============================================
+
+export function getStoriesInEntity(name){
+    var ref = database.collection("entity").doc(name).collection("StoriesInEntity")
+    return ref.get().then(function(refSnapshot){
+        let res = []
+        refSnapshot.forEach(function(doc){
+            doc && doc.exists ? res.push(doc.data().sid) : null
+        })
+        return Promise.resolve(res)
+    })
+}
 
 export function getEntitiesInStory(uid, sid){
     var ref = userRef.doc(uid.toString()).collection("stories").doc(sid.toString()).collection("entities");
@@ -212,7 +211,7 @@ export function upvoteStory(uid, sid){
     })
 }
 
-export function topStories(x){
+export function getTopStories(x){
   var ref = database.collection("stories");
   var query = ref.orderBy("popularity").limit(x);
 
@@ -225,6 +224,24 @@ export function topStories(x){
   })
 }
 
+<<<<<<< HEAD
+=======
+export function getRecentStories(uid, x){
+  var ref = database.collection("users").doc(uid.toString()).collection("myStories");
+  var query = ref.orderBy("timestamp", "desc").limit(x);
+
+  return query.get().then(function(querySnapshot){
+      let res = []
+      querySnapshot.forEach(function(doc){
+          doc && doc.exists ? res.push(doc.data().sid) : null
+      })
+      return Promise.resolve(res)
+  })
+}
+
+
+
+>>>>>>> 089fa5de16cfd11c9d7ed83204e9613fa220f540
 //===================Firestore Database Write==================================================
 export function writeUserData(uid, username, numStories){
     database.collection("users").doc(uid.toString()).set({

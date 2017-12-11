@@ -51,13 +51,13 @@ class Home extends Component {
       else {
         const d = new Date();
 
-        Queries.writeUserData(user.uid,user.displayName, Queries.getStoryNumber(user.uid) + 1);
-        Queries.writeStoryData(user.uid, "s_test", new Date(), this.state.story, 0, false);
-        console.log("Done writing story!")
-
-        alert("User " + user.uid + " submitted story " + "s_test" + " on " + d + "STORY: " + this.state.story);
-
-        this.loadStory("s_test")
+        Queries.getLatestSid().then((sidArray) => {
+          var sid = sidArray[0] + 1;
+          Queries.writeStoryData(user.uid, sid, d, this.state.story, false);
+          console.log("Done writing story!")
+          alert("User " + user.uid + " submitted story " + sid + " on " + d + "STORY: " + this.state.story);
+          this.loadStory(sid);
+        })
 
 
         this.setState({
@@ -73,19 +73,28 @@ class Home extends Component {
     }
 
     loadStory(sid) {
-      var ref = database.collection("users").doc(this.state.currentUser.uid).collection("stories").doc(sid);
+      var ref = database.collection("users").doc(this.state.currentUser.uid.toString()).collection("myStories").doc(sid.toString());
 
       const thisComponent = this;
 
       ref.get().then(function(doc){
-        const string = doc.data().string;
+        if(doc && doc.exists){
+          const string = doc.data().string;
 
-        thisComponent.setState({
-          currentStory: string,
-          currentSteps: string.split(" "),
-        })
+          thisComponent.setState({
+            currentStory: string,
+            currentSteps: string.split(" "),
+          })
+          console.log("split")
 
-        search(thisComponent.state.currentSteps[0]);
+        }
+        else{
+          console.log("no split")
+          return new Error("Oops");
+        }
+
+        //search(thisComponent.state.currentSteps[0]);
+
 
         // return new Promise(function (resolve, reject) {
         //   resolve(thisComponent.state.currentSteps[0])

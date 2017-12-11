@@ -81,10 +81,13 @@ class App extends Component {
 
 
   render() {
+<<<<<<< HEAD
       //Query.initApp();
       Query.getStoriesInEntity("Coca Cola").then(function(res){
         console.log(res)
       })
+=======
+>>>>>>> 089fa5de16cfd11c9d7ed83204e9613fa220f540
 
     return (
       <div className="App">
@@ -101,7 +104,7 @@ class App extends Component {
               render={() => !this.state.isLoggedIn ? <Login/> : <Search/>}
             />*/}
             <Route exact path="/history"
-              render={() => !this.state.isLoggedIn ? <Login/> : <History/>}
+              render={() => !this.state.isLoggedIn ? <Login/> : <History currentUser={this.state.currentUser}/>}
             />
             <Route exact path="/login"
               render={() => !this.state.isLoggedIn ? <Login/> : <Home currentUser={this.state.currentUser} isLoggedIn={this.state.isLoggedIn} />}
