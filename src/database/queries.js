@@ -1,4 +1,4 @@
-import database from './config';
+  import database from './config';
 
 const userRef = database.collection("users")
 //export function test(){
